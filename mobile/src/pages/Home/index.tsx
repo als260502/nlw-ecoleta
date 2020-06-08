@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native'
 
 import { RectButton } from 'react-native-gesture-handler'
 import { Feather as Icon } from '@expo/vector-icons'
-import RNPickerSelect from 'react-native-picker-select'
+import Select from '../../components/Select'
 import axios from 'axios'
 
 interface SelectProps {
@@ -29,56 +29,15 @@ const Home: React.FC = () => {
   const [uf, setUf] = useState('')
   const [city, setCity] = useState('')
 
-  const [selectUF, setSelectUF] = useState<SelectProps[]>([])
-  const [selectCity, setSelectCity] = useState<SelectProps[]>([])
-
   const navigation = useNavigation()
 
   function handleNavigateToPoints() {
     navigation.navigate('Points', {
-      uf: 'RJ',
-      city: "Niterói"
+      uf: uf,
+      city: city
     })
   }
-
-
-  useEffect(() => {
-
-    if (!uf) return
-
-    axios.get<IBGECityResponse[]>(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`)
-      .then(response => {
-        const obj: SelectProps[] = []
-        response.data.map(item => {
-          let arr = { label: '', value: '' }
-          arr.label = item.nome
-          arr.value = item.nome
-          obj.push(arr)
-        })
-        setSelectCity(obj)
-      })
-
-
-  }, [uf])
-
-  useEffect(() => {
-
-
-    axios.get<IBGEUFResponse[]>('https://servicodados.ibge.gov.br/api/v1/localidades/estados')
-      .then(response => {
-        const obj: SelectProps[] = []
-        response.data.map(item => {
-          let arr = { label: '', value: '' }
-          arr.label = item.sigla
-          arr.value = item.sigla
-          obj.push(arr)
-        })
-        setSelectUF(obj)
-      })
-
-
-  }, [])
-
+  
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ImageBackground
@@ -97,19 +56,7 @@ const Home: React.FC = () => {
 
         <View style={styles.footer}>
 
-          <RNPickerSelect
-            onValueChange={(value) => setUf(value)}
-            items={selectUF}
-            value={uf}
-            style={pickerSelectStyles}
-
-          />
-          <RNPickerSelect
-            onValueChange={(value) => setCity(value)}
-            items={selectCity}
-            value={city}
-            style={pickerSelectStyles}
-          />
+          <Select handleSelectUf={setUf} handleSelectCity={setCity}/>    
 
           <RectButton
             style={styles.button}
@@ -198,23 +145,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   }
 });
-
-
-const pickerSelectStyles = StyleSheet.create({
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 24,
-    paddingVertical: 8,
-    borderWidth: 0.5,
-    borderColor: 'purple',
-    borderRadius: 8,
-    paddingRight: 30, // to ensure the text is never behind the icon
-    height: 60,
-    marginBottom: 8,
-
-
-  },
-});
-
 
 export default Home;

@@ -50,6 +50,9 @@ const Points: React.FC = () => {
       setItems(response.data)
     })
 
+
+    console.log(items)
+
   }, [])
 
   useEffect(() => {
@@ -76,6 +79,8 @@ const Points: React.FC = () => {
   }, [])
 
   useEffect(() => {
+
+    //console.log(routeParams)
     api.get('points', {
       params: {
         city: routeParams.city,
